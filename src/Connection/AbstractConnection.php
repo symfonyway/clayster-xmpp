@@ -66,6 +66,12 @@ abstract class AbstractConnection implements ConnectionInterface
     protected $inputStream;
 
     /**
+     * Input stream buffer.
+     * @var array
+     */
+    private $inputStreamBuffer;
+
+    /**
      * Options.
      *
      * @var Options
@@ -114,6 +120,11 @@ abstract class AbstractConnection implements ConnectionInterface
      * @var BlockingEventListenerInterface
      */
     private $lastBlockingListener;
+
+    public function __construct()
+    {
+        $this->inputStreamBuffer = [];
+    }
 
     /**
      * {@inheritDoc}
@@ -307,5 +318,23 @@ abstract class AbstractConnection implements ConnectionInterface
         if (time() >= $this->lastResponse + $timeout) {
             throw new TimeoutException('Connection lost after ' . $timeout . ' seconds');
         }
+    }
+
+    /**
+     * Gets InputStreamBuffer
+     *
+     * @return array
+     */
+    public function getInputStreamBuffer()
+    {
+        return $this->inputStreamBuffer;
+    }
+
+    /**
+     * @param string $data
+     */
+    public function addInputStreamBuffer($data)
+    {
+        $this->inputStreamBuffer[] = $data;
     }
 }
