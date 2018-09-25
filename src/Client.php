@@ -149,6 +149,14 @@ class Client implements EventManagerAwareInterface
     }
 
     /**
+     * @return array
+     */
+    public function getInputBuffer()
+    {
+        return $this->connection->getInputStreamBuffer();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getEventManager()
