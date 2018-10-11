@@ -17,7 +17,7 @@ use Fabiang\Xmpp\Util\XML;
 class SetResources implements ProtocolImplementationInterface
 {
     /**
-     * Devices serials number array.
+     * Devices serial numbers array.
      * @var array
      */
     private $serials;
@@ -36,18 +36,25 @@ class SetResources implements ProtocolImplementationInterface
      */
     public function toString()
     {
-        $message = '<message to="cdo.example.com">' .
-            '<actionrequest name="setclaimkey" id="' . XML::generateId() . '" xmlns="urn:clayster:cdo">' .
-                '<entitysetclaimkey>' .
-                    '<claimkey>'
+        $message = '<message to="cdo.sandbox.clayster.com">' .
+//        $message = '<message to="cdo.example.com">' .
+            '<actionrequest name="setresources" id="' . XML::generateId() . '" xmlns="urn:clayster:cdo">' .
+                '<entitysetresources>' .
+                    '<resources>' .
+                        '<list>'
         ;
 
         foreach ($this->serials as $serial) {
-            $message .= '<string>' . $serial . '</string>';
+            $message .= '<resource><path><resourcepath>' . "HomeGate/$serial" . '</resourcepath></path>' .
+                '<capabilities><list><string>Secure smart home IOT platform</string></list></capabilities>' .
+                '<supportedverbs><list><dataverb>GET</dataverb><dataverb>SET</dataverb></list></supportedverbs>' .
+                '</resource>'
+            ;
         }
 
-        $message .= '</claimkey>'.
-                '</entitysetclaimkey>' .
+        $message .=     '</list>' .
+                    '</resources>'.
+                '</entitysetresources>' .
             '</actionrequest>' .
             '</message>'
         ;

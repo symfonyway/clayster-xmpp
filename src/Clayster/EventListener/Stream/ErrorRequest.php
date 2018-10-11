@@ -2,7 +2,7 @@
 /**
  * Created by PhpStorm.
  * User: Alex alex.n@symfonyart.com
- * Date: 21.09.2018
+ * Date: 09.10.2018
  */
 
 namespace Fabiang\Xmpp\Clayster\EventListener\Stream;
@@ -12,10 +12,10 @@ use Fabiang\Xmpp\EventListener\AbstractEventListener;
 use Fabiang\Xmpp\EventListener\BlockingEventListenerInterface;
 
 /**
- * Class ActionRequest
+ * Class ErrorRequest
  * @package Fabiang\Xmpp\Clayster\EventListener\Stream
  */
-class ActionRequest extends AbstractEventListener implements BlockingEventListenerInterface
+class ErrorRequest extends AbstractEventListener implements BlockingEventListenerInterface
 {
     /**
      * Blocking.
@@ -30,22 +30,12 @@ class ActionRequest extends AbstractEventListener implements BlockingEventListen
     public function attachEvents()
     {
         $this->getOutputEventManager()
-            ->attach('{urn:clayster:cdo}actionrequest', [$this, 'query'])
+            ->attach('{jabber:client}error', [$this, 'query'])
         ;
 
-        $input = $this->getInputEventManager();
-        $input->attach('{urn:clayster:cdo}actionresponse', [$this, 'result']);
-        $input->attach('{urn:clayster:cdo}actionrequest', [$this, 'resultError']);
-    }
-
-    /**
-     * Sending a query request for roster sets listener to blocking mode.
-     *
-     * @return void
-     */
-    public function query()
-    {
-        $this->blocking = true;
+        $this->getInputEventManager()
+            ->attach('{jabber:client}error', [$this, 'result'])
+        ;
     }
 
     /**
@@ -61,15 +51,15 @@ class ActionRequest extends AbstractEventListener implements BlockingEventListen
         }
     }
 
+
     /**
-     * Error result received.
+     * Sending a query request for roster sets listener to blocking mode.
      *
-     * @param \Fabiang\Xmpp\Event\XMLEvent $event
      * @return void
      */
-    public function resultError(XMLEvent $event)
+    public function query()
     {
-        $this->blocking = false;
+        $this->blocking = true;
     }
 
     /**
