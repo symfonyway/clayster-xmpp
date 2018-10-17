@@ -37,7 +37,6 @@ class SetResources implements ProtocolImplementationInterface
     public function toString()
     {
         $message = '<message to="cdo.sandbox.clayster.com">' .
-//        $message = '<message to="cdo.example.com">' .
             '<actionrequest name="setresources" id="' . XML::generateId() . '" xmlns="urn:clayster:cdo">' .
                 '<entitysetresources>' .
                     '<resources>' .
