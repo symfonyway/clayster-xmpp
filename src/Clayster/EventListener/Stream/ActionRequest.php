@@ -25,6 +25,12 @@ class ActionRequest extends AbstractEventListener implements BlockingEventListen
     private $blocking = false;
 
     /**
+     * The action name. For waiting response.
+     * @var string
+     */
+    private $name = null;
+
+    /**
      * {@inheritDoc}
      */
     public function attachEvents()
@@ -33,18 +39,29 @@ class ActionRequest extends AbstractEventListener implements BlockingEventListen
             ->attach('{urn:clayster:cdo}actionrequest', [$this, 'query'])
         ;
 
-        $this->getInputEventManager()
-            ->attach('{urn:clayster:cdo}actionresponse', [$this, 'result'])
-        ;
+        $input = $this->getInputEventManager();
+        $input->attach('{urn:clayster:cdo}actionresponse', [$this, 'result']);
+        $input->attach('{urn:clayster:cdo}actionrequest', [$this, 'resultError']);
     }
 
     /**
      * Sending a query request for roster sets listener to blocking mode.
      *
+     * @param \Fabiang\Xmpp\Event\XMLEvent $event
      * @return void
      */
-    public function query()
+    public function query(XMLEvent $event)
     {
+        if (!$event->isStartTag()) {
+            return;
+        }
+
+        /* @var $element \DOMElement */
+        $element = $event->getParameter(0);
+        if ($element->hasAttribute('name')) {
+            $this->name = $element->getAttribute('name');
+        }
+
         $this->blocking = true;
     }
 
@@ -57,9 +74,49 @@ class ActionRequest extends AbstractEventListener implements BlockingEventListen
     public function result(XMLEvent $event)
     {
         if ($event->isEndTag()) {
-            $element = $event->getParameter(0);
-            $t = $element->textContent;
+            return;
+        }
 
+        if ($this->name == null) {
+            $this->blocking = false;
+            return;
+        }
+
+        $element = $event->getParameter(0);
+        if (!$element->hasAttribute('name')) {
+            $this->blocking = false;
+            return;
+        }
+
+        if ($this->name == $element->getAttribute('name')) {
+            $this->blocking = false;
+        }
+    }
+
+    /**
+     * Error result received.
+     *
+     * @param \Fabiang\Xmpp\Event\XMLEvent $event
+     * @return void
+     */
+    public function resultError(XMLEvent $event)
+    {
+        if ($event->isEndTag()) {
+            return;
+        }
+
+        if ($this->name == null) {
+            $this->blocking = false;
+            return;
+        }
+
+        $element = $event->getParameter(0);
+        if (!$element->hasAttribute('name')) {
+            $this->blocking = false;
+            return;
+        }
+
+        if ($this->name == $element->getAttribute('name')) {
             $this->blocking = false;
         }
     }
