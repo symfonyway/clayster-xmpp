@@ -144,6 +144,11 @@ class Options
      */
     protected $contextOptions = [];
 
+    /**
+     * Response options bag.
+     * @var array
+     */
+    private $responseContextOptions = [];
 
     /**
      * Constructor.
@@ -484,6 +489,29 @@ class Options
     public function setContextOptions($contextOptions)
     {
         $this->contextOptions = (array) $contextOptions;
+        return $this;
+    }
+
+    /**
+     * Gets ResponseContextOptions
+     *
+     * @return array
+     */
+    public function getResponseContextOptions()
+    {
+        return $this->responseContextOptions;
+    }
+
+    /**
+     * Sets ResponseContextOptions
+     *
+     * @param array $responseContextOptions
+     *
+     * @return Options
+     */
+    public function setResponseContextOptions($responseContextOptions)
+    {
+        $this->responseContextOptions = $responseContextOptions;
         return $this;
     }
 }
